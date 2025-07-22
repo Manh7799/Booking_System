@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:fragment="menu">
+    <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+    <aside class="app-sidebar">
+        <ul class="app-menu">
+            <li><a class="app-menu__item" href="/admin/phim"><i class="app-menu__icon fa fa-dashboard"></i><span
+                    class="app-menu__label">Quản lý phim</span></a></li>
+            <li><a class="app-menu__item" href="/admin/rapchieu"><i class="app-menu__icon fa fa-dashboard"></i><span
+                    class="app-menu__label">Quản lý rạp chiếu</span></a></li>
+            <li><a class="app-menu__item" href="/admin/theloai"><i class="app-menu__icon fa fa-dashboard"></i><span
+                    class="app-menu__label">Quản lý thể loại</span></a></li>
+        </ul>
+    </aside>
+</div>
+</body>
+</html>

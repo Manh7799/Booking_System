@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/home/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý rạp chiếu</title>
+    <script type="text/javascript" th:src="@{/js/rapchieu.js}"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            layDanhSachRapChieu();
+        });
+
+        function suaThongTin(idRapChieu) {
+            thongTinChiTiet(idRapChieu);
+        }
+
+        function xoaThongTin(id) {
+            $("#hRapChieuId").val(id);
+        }
+
+        function hienThiThemMoi() {
+            $("#modalTitle").text("Thêm mới thông tin rạp chiếu");
+            $("#hRapChieuId").text("");
+            $("#tenRap").val("");
+            $("#diaChi").val("");
+        }
+
+        /*
+        Ham xu ly them moi hoac cap nhat
+         */
+        function themMoiHoacCapNhat() {
+            let form = $("#modalRapChieu").validate({
+                rules: {
+                    tenRap: "required",
+                },
+                messages: {
+                    tenRap: "Bạn cần phải nhập tên rạp chiếu",
+                },
+                submitHandler: function () {
+                    if (form.valid()) {
+                        //Gọi hàm thêm mới hoặc sửa
+                        xuLyThemMoi();
+                    }
+                }
+            });
+        }
+
+    </script>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="app-title">
+        <div>
+            <h1><i class="fa fa-th-list"></i> Quản lý rạp chiếu</h1>
+            <p>Danh sách thông tin rạp chiếu trong hệ thống</p>
+        </div>
+        <ul class="app-breadcrumb breadcrumb side">
+            <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+        </ul>
+    </div>
+    <div class="row">
+        <div class="col-md-12" style="padding: 0">
+            <div class="tile" style="padding: 20px;">
+                <div class="tile-body">
+                    <div class="container mt-4">
+                        <div style="width: 100%; display: flex; justify-content: space-between; margin-bottom: 10px">
+                            <h3 class="text-center">Quản lý rạp chiếu</h3>
+                            <a href="#" onclick="hienThiThemMoi()" class="btn btn-primary" data-bs-toggle="modal"
+                               data-bs-target="#modalRapChieu">Thêm
+                                mới</a>
+                        </div>
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Tên rạp</th>
+                                <th>Địa chỉ</th>
+                                <th>Thao tác</th>
+                            </tr>
+                            </thead>
+                            <tbody id="dsRapChieu"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Thêm/Sửa Rạp -->
+    <form id="modalRapChieu" method="post" class="modal fade" tabindex="-1" aria-labelledby="Thêm rạp"
+          aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Thêm mới thông tin rạp chiếu</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="tile-body" id="tile-body">
+                        <input type="hidden" id="hRapChieuId" name="hRapChieuId">
+                        <div class="form-group row">
+                            <label class="col-md-3">
+                                Tên rạp:
+                            </label>
+                            <div class="col-md-9">
+                                <input id="tenRap" name="tenRap" type="text" class="form-control"
+                                       placeholder="Nhập tên rạp"/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-3">
+                                Địa chỉ:
+                            </label>
+                            <div class="col-md-9">
+                                <input id="diaChi" name="diaChi" type="text" class="form-control"
+                                       placeholder="Nhập địa chỉ "/>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" onclick="themMoiHoacCapNhat()" class="btn btn-primary">Cập nhật</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Modal Xóa Rạp -->
+    <fieldset class="modal fade" id="modalXoaRap" tabindex="-1" aria-labelledby="modalTitleXoaRap" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitleXoaRap">Thông báo xóa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="tile-body" id="title-delete">
+
+                        <h3>Bạn có chắc chắn muốn xoá thông tin này không ? </h3>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger" onclick="thucHienXoaRap()">Đồng ý</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</div>
+</body>
+</html>

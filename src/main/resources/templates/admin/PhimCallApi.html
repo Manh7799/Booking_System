@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/home/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Phim Call API</title>
+    <script type="text/javascript" th:src="@{/js/phim.js}"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            layDanhSachTheLoai(layDanhSachPhim);
+            // layDanhSachPhim();
+        });
+
+        function suaThongTin(idPhim) {
+            //Hiển thị thông tin chi tiết
+            thongTinChiTiet(idPhim);
+        }
+
+        function xoaThongTin(id) {
+            $("#hPhimid").val(id);
+        }
+
+        function hienThiThemMoi() {
+            $("#modalTitle").text("Thêm mới thông tin phim");
+            $("#hPhimid").text("");
+            $("#tenPhim").val("");
+            $("#daoDien").val("");
+            $("#dienVien").val("");
+            $("#idTheLoai").val("");
+            $("#khoiChieu").val("");
+            $("#ngonNgu").val("");
+            $("#thoiLuong").val("");
+            $("#moTa").val("");
+            $("#anh").val("");
+        }
+
+        /*
+        Ham xu ly them moi hoac cap nhat
+         */
+        function themMoiHoacCapNhat() {
+            let form = $("#modalPhim").validate({
+                rules: {
+                    tenPhim: "required",
+                },
+                messages: {
+                    tenPhim: "Bạn cần phải nhập tên phim",
+                },
+                submitHandler: function () {
+                    if (form.valid()) {
+                        //Gọi hàm thêm mới hoặc sửa
+                        xuLyThemMoi();
+                    }
+                }
+            });
+        }
+
+    </script>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="app-title">
+        <div>
+            <h1><i class="fa fa-th-list"></i> Quản lý phim</h1>
+            <p>Danh sách thông tin phim trong hệ thống</p>
+        </div>
+        <ul class="app-breadcrumb breadcrumb side">
+            <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+        </ul>
+    </div>
+    <div class="row">
+        <div class="col-md-12" style="padding: 0">
+            <div class="tile" style="padding: 20px;">
+                <div class="tile-body">
+                    <div style="width: 100%; display: flex; justify-content: space-between; margin-bottom: 10px">
+                        <h3> Danh sách phim </h3>
+                        <a href="#" onclick="hienThiThemMoi()" class="btn btn-primary" data-bs-toggle="modal"
+                           data-bs-target="#modalPhim">Thêm
+                            mới</a>
+                    </div>
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Ảnh</th>
+                            <th>Tên phim</th>
+                            <th>Đạo diễn</th>
+                            <th>Diễn viên</th>
+                            <th>Thể loại</th>
+                            <th>Khởi chiếu</th>
+                            <th>Ngôn ngữ</th>
+                            <th>Thời lượng</th>
+                            <th>Mô tả</th>
+                            <th style="width: 100px;"></th>
+                        </tr>
+                        </thead>
+                        <tbody id="dsPhim">
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <form id="modalPhim" method="post" class="modal fade" tabindex="-1" aria-labelledby="Thêm phim"
+          aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Thêm mới thông tin phim</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="tile-body" id="tile-body">
+                        <!-- Ẩn trường Id phim, chỉ dùng input hidden để lưu id khi sửa -->
+                        <input type="hidden" id="hPhimid" name="hPhimid">
+                        <div class="form-group row">
+                            <label class="col-md-3">
+                                Tên phim:
+                            </label>
+                            <div class="col-md-9">
+                                <input id="tenPhim" name="tenPhim" type="text" class="form-control"
+                                       placeholder="Nhập tên phim"/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-3">
+                                Đạo diễn:
+                            </label>
+                            <div class="col-md-9">
+                                <input id="daoDien" name="daoDien" type="text" class="form-control"
+                                       placeholder="Nhập đạo diễn "/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-3">
+                                Diễn viên:
+                            </label>
+                            <div class="col-md-9">
+                                <input id="dienVien" name="dienVien" type="text" class="form-control"
+                                       placeholder="Nhập diễn viên "/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-3">
+                                Thể loại:
+                            </label>
+                            <div class="col-md-9">
+                                <input id="idTheLoai" name="idTheLoai" type="text" class="form-control"
+                                       placeholder="Nhập thể loại"/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-3">
+                                Khởi chiếu:
+                            </label>
+                            <div class="col-md-9">
+                                <input id="khoiChieu" name="khoiChieu" type="text" class="form-control"
+                                       placeholder="Nhập khởi chiếu "/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-3">
+                                Ngôn ngữ:
+                            </label>
+                            <div class="col-md-9">
+                                <input id="ngonNgu" name="ngonNgu" type="text" class="form-control"
+                                       placeholder="Nhập ngôn ngữ "/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-3">
+                                Thời lượng:
+                            </label>
+                            <div class="col-md-9">
+                                <input id="thoiLuong" name="thoiLuong" type="text" class="form-control"
+                                       placeholder="Nhập thời lượng"/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-3">
+                                Mô tả:
+                            </label>
+                            <div class="col-md-9">
+                                <input id="moTa" name="moTa" type="text" class="form-control"
+                                       placeholder="Nhập mô tả "/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-3">
+                                Ảnh:
+                            </label>
+                            <div class="col-md-9">
+                                <input id="anh" name="anh" type="text" class="form-control"/>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" onclick="themMoiHoacCapNhat()" class="btn btn-primary">Cập nhật</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <!--Form modal hỏi xoá chủ đề-->
+    <fieldset id="modalXoa" class="modal fade" tabindex="-1" aria-labelledby="Xóa phim" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        Thông báo xoá</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="tile-body" id="title-delete">
+
+                        <h3>Bạn có chắc chắn muốn xoá thông tin này không ? </h3>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" onclick="thucHienXoa()" class="btn btn-primary">Đồng ý</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</div>
+</body>
+</html>
