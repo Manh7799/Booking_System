@@ -7,10 +7,25 @@
     <script type="text/javascript" th:src="@{/js/phim.js}"></script>
     <script type="text/javascript">
         $(document).ready(function () {
-            layDanhSachTheLoai(layDanhSachPhim);
+            // layDanhSachTheLoai(layDanhSachPhim);
             // layDanhSachPhim();
+
+            layDanhSachTheLoai(function () {
+                layDanhSachPhim(1, 10); // Load trang đầu tiên với 10 item
+            });
+
+            khoiTaoDropdownPhanTrang();
         });
 
+        // Hàm khởi tạo dropdown phân trang
+        function khoiTaoDropdownPhanTrang() {
+            // Gán sự kiện onchange cho dropdown
+            $('#itemsPerPage').on('change', function () {
+                itemsPerPage = $(this).val();
+                currentPage = 1; // Reset về trang đầu tiên
+                layDanhSachPhim(currentPage, itemsPerPage);
+            });
+        }
         function suaThongTin(idPhim) {
             //Hiển thị thông tin chi tiết
             thongTinChiTiet(idPhim);
@@ -26,6 +41,7 @@
             $("#tenPhim").val("");
             $("#daoDien").val("");
             $("#dienVien").val("");
+            populateTheLoaiDropdown();
             $("#idTheLoai").val("");
             $("#khoiChieu").val("");
             $("#ngonNgu").val("");
@@ -97,6 +113,25 @@
 
                         </tbody>
                     </table>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <div id="page-info" class="text-muted">
+                                Hiển thị 0-0 của 0 kết quả
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <select id="itemsPerPage" class="form-select d-inline-block w-auto"
+                                    onchange="thayDoiSoLuongTrang()">
+                                <option value="5">5 phim/trang</option>
+                                <option value="10" selected >10 phim/trang</option>
+                                <option value="20">20 phim/trang</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="pagination-container" class="mt-3">
+                        <!-- Phân trang sẽ được tạo bằng JavaScript -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -111,7 +146,6 @@
                 </div>
                 <div class="modal-body">
                     <div class="tile-body" id="tile-body">
-                        <!-- Ẩn trường Id phim, chỉ dùng input hidden để lưu id khi sửa -->
                         <input type="hidden" id="hPhimid" name="hPhimid">
                         <div class="form-group row">
                             <label class="col-md-3">
@@ -145,8 +179,9 @@
                                 Thể loại:
                             </label>
                             <div class="col-md-9">
-                                <input id="idTheLoai" name="idTheLoai" type="text" class="form-control"
-                                       placeholder="Nhập thể loại"/>
+                                <select id="idTheLoai" name="idTheLoai" class="form-control">
+                                    <option value="">-- Chọn thể loại --</option>
+                                </select>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -203,7 +238,7 @@
             </div>
         </div>
     </form>
-    <!--Form modal hỏi xoá chủ đề-->
+
     <fieldset id="modalXoa" class="modal fade" tabindex="-1" aria-labelledby="Xóa phim" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">

@@ -4,6 +4,8 @@ import com.example.booking_system.dao.PhimDao;
 import com.example.booking_system.entity.Phim;
 import com.example.booking_system.repository.PhimRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,6 +19,11 @@ public class PhimImpl implements PhimDao {
     @Override
     public List<Phim> getList() {
         return phimRepository.findAll();
+    }
+
+    @Override
+    public Page<Phim> getListWithPagination(Pageable pageable) {
+        return phimRepository.findAll(pageable);
     }
 
     @Override

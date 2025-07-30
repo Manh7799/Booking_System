@@ -7,7 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 
 @CrossOrigin
@@ -18,11 +22,41 @@ public class PhimAPIController {
     @Autowired
     PhimService phimService;
 
-    @GetMapping("/phim")
-    public ResponseEntity<List<Phim>> layDanhSach() {
-        List<Phim> lstPhim = phimService.layDanhSach();
+//    @GetMapping("/phim")
+//    public ResponseEntity<List<Phim>> layDanhSach() {
+//        List<Phim> lstPhim = phimService.layDanhSach();
+//
+//        return new ResponseEntity<List<Phim>>(lstPhim, HttpStatus.OK);
+//    }
 
-        return new ResponseEntity<List<Phim>>(lstPhim, HttpStatus.OK);
+    @GetMapping("/phim")
+    public ResponseEntity<Map<String, Object>> layDanhSach(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        try {
+            // Tạo đối tượng Pageable để phân trang
+            Pageable pageable = PageRequest.of(page - 1, size);  // -1 vì page trong Spring bắt đầu từ 0
+
+            // Gọi service để lấy dữ liệu phân trang
+            Page<Phim> pageResult = phimService.layDanhSachPhanTrang(pageable);
+
+            // Đóng gói dữ liệu trả về
+            Map<String, Object> response = new HashMap<>();
+            response.put("content", pageResult.getContent());       // Danh sách phim
+            response.put("currentPage", page);                     // Trang hiện tại
+            response.put("totalPages", pageResult.getTotalPages()); // Tổng số trang
+            response.put("totalElements", pageResult.getTotalElements()); // Tổng số phần tử
+            response.put("size", size);
+            response.put("hasNext", pageResult.hasNext());
+            response.put("hasPrevious", pageResult.hasPrevious());
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Không thể lấy danh sách phim");
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/phim/{id}")

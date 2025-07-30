@@ -3,6 +3,8 @@ package com.example.booking_system.service;
 import com.example.booking_system.entity.Phim;
 import com.example.booking_system.dao.PhimDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +19,9 @@ public class PhimService {
         return phimDao.getList();
     }
 
+    public Page<Phim> layDanhSachPhanTrang(Pageable pageable) {
+        return phimDao.getListWithPagination(pageable);
+    }
     public Phim layChiTiet(int idPhim) {
         return phimDao.getById(idPhim);
     }

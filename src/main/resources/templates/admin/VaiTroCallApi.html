@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/home/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Thể loại</title>
+    <script type="text/javascript" th:src="@{/js/vaitro.js}"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            layDanhSachVaiTro();
+        });
+
+        function suaThongTin(idVaiTro) {
+            thongTinChiTiet(idVaiTro);
+        }
+
+        function xoaThongTin(id) {
+            $("#hVaiTroId").val(id);
+        }
+
+        function hienThiThemMoi() {
+            $("#modalTitle").text("Thêm mới thông tin ");
+            $("#hVaiTroId").text("");
+            $("#ten").val("");
+        }
+
+        /*
+        Ham xu ly them moi hoac cap nhat
+         */
+        function themMoiHoacCapNhat() {
+            let form = $("#modalVaiTro").validate({
+                rules: {
+                    ten: "required",
+                },
+                messages: {
+                    ten: "Bạn cần phải nhập tên ",
+                },
+                submitHandler: function () {
+                    if (form.valid()) {
+                        //Gọi hàm thêm mới hoặc sửa
+                        xuLyThemMoi();
+                    }
+                }
+            });
+        }
+
+    </script>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="app-title">
+        <div>
+            <h1><i class="fa fa-th-list"></i> Quản lý vai trò</h1>
+            <p>Danh sách thông tin vai trò trong hệ thống</p>
+        </div>
+        <ul class="app-breadcrumb breadcrumb side">
+            <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+        </ul>
+    </div>
+    <div class="row">
+        <div class="col-md-12" style="padding: 0">
+            <div class="tile" style="padding: 20px;">
+                <div class="tile-body">
+                    <div class="container mt-4">
+                        <div style="width: 100%; display: flex; justify-content: space-between; margin-bottom: 10px">
+                            <h3 class="text-center">Quản lý vai trò</h3>
+                            <a href="#" onclick="hienThiThemMoi()" class="btn btn-primary" data-bs-toggle="modal"
+                               data-bs-target="#modalVaiTro">Thêm
+                                mới</a>
+                        </div>
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Tên vai trò</th>
+                            </tr>
+                            </thead>
+                            <tbody id="dsVaiTro"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Thêm/Sửa Rạp -->
+    <form id="modalVaiTro" method="post" class="modal fade" tabindex="-1" aria-labelledby="Thêm "
+          aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Thêm mới thông tin vai trò</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="tile-body" id="tile-body">
+                        <input type="hidden" id="hVaiTroId" name="hVaiTroId">
+                        <div class="form-group row">
+                            <label class="col-md-3">
+                                Tên vai trò:
+                            </label>
+                            <div class="col-md-9">
+                                <input id="ten" name="ten" type="text" class="form-control"
+                                       placeholder="Nhập tên vai trò"/>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" onclick="themMoiHoacCapNhat()" class="btn btn-primary">Cập nhật</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Modal Xóa Rạp -->
+    <fieldset class="modal fade" id="modalXoa" tabindex="-1" aria-labelledby="modalTitleXoa" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitleXoa">Thông báo xóa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="tile-body" id="title-delete">
+
+                        <h3>Bạn có chắc chắn muốn xoá thông tin này không ? </h3>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger" onclick="thucHienXoa()">Đồng ý</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</div>
+</body>
+</html>

@@ -1,10 +1,186 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/home/layout}">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Người dùng Call API</title>
+    <script type="text/javascript" th:src="@{/js/nguoidung.js}"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            layDanhSachNguoiDung();
+        });
+
+        function suaThongTin(idNguoiDung) {
+            //Hiển thị thông tin chi tiết
+            thongTinChiTiet(idNguoiDung);
+        }
+
+        function xoaThongTin(id) {
+            $("#hNguoiDungId").val(id);
+        }
+
+        function hienThiThemMoi() {
+            $("#modalTitle").text("Thêm mới thông tin");
+            $("#hNguoiDungId").text("");
+            $("#ten").val("");
+            $("#matKhau").val("");
+            $("#email").val("");
+            $("#thoiGianTao").val("");
+            $("#idVaiTro").val("");
+        }
+
+        /*
+        Ham xu ly them moi hoac cap nhat
+         */
+        function themMoiHoacCapNhat() {
+            let form = $("#modalNguoiDung").validate({
+                rules: {
+                    ten: "required",
+                },
+                messages: {
+                    ten: "Bạn cần phải nhập tên",
+                },
+                submitHandler: function () {
+                    if (form.valid()) {
+                        //Gọi hàm thêm mới hoặc sửa
+                        xuLyThemMoi();
+                    }
+                }
+            });
+        }
+
+    </script>
 </head>
 <body>
+<div layout:fragment="content">
+    <div class="app-title">
+        <div>
+            <h1><i class="fa fa-th-list"></i> Quản lý người dùng</h1>
+            <p>Danh sách thông tin người dùng trong hệ thống</p>
+        </div>
+        <ul class="app-breadcrumb breadcrumb side">
+            <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+        </ul>
+    </div>
+    <div class="row">
+        <div class="col-md-12" style="padding: 0">
+            <div class="tile" style="padding: 20px;">
+                <div class="tile-body">
+                    <div style="width: 100%; display: flex; justify-content: space-between; margin-bottom: 10px">
+                        <h3> Danh sách người dùng </h3>
+                        <a href="#" onclick="hienThiThemMoi()" class="btn btn-primary" data-bs-toggle="modal"
+                           data-bs-target="#modalNguoiDung">Thêm
+                            mới</a>
+                    </div>
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Tên</th>
+                            <th>Mật khẩu</th>
+                            <th>Email</th>
+                            <th>Thời gian tạo</th>
+                            <th>Vai trò</th>
+                            <th style="width: 100px;"></th>
+                        </tr>
+                        </thead>
+                        <tbody id="dsNguoiDung">
 
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <form id="modalNguoiDung" method="post" class="modal fade" tabindex="-1" aria-labelledby="Thêm người dùng"
+          aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Thêm mới thông tin người dùng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="tile-body" id="tile-body">
+                        <input type="hidden" id="hNguoiDungId" name="hNguoiDungId">
+                        <div class="form-group row">
+                            <label class="col-md-3">
+                                Tên đăng nhập:
+                            </label>
+                            <div class="col-md-9">
+                                <input id="ten" name="ten" type="text" class="form-control"
+                                       placeholder="Nhập tên"/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-3">
+                                Mật khẩu:
+                            </label>
+                            <div class="col-md-9">
+                                <input id="matKhau" name="matKhau" type="text" class="form-control"
+                                       placeholder="Nhập mật khẩu "/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-3">
+                                Email:
+                            </label>
+                            <div class="col-md-9">
+                                <input id="email" name="email" type="text" class="form-control"
+                                       placeholder="Nhập email "/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-3">
+                                Thời gian tạo:
+                            </label>
+                            <div class="col-md-9">
+                                <input id="thoiGianTao" name="thoiGianTao" type="text" class="form-control"
+                                       placeholder="Nhập thời gian "/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-3">
+                                Vai trò:
+                            </label>
+                            <div class="col-md-9">
+                                <input id="idVaiTro" name="idVaiTro" type="text" class="form-control"
+                                       placeholder="Nhập vai trò "/>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" onclick="themMoiHoacCapNhat()" class="btn btn-primary">Cập nhật</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <fieldset id="modalXoa" class="modal fade" tabindex="-1" aria-labelledby="Xóa" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        Thông báo xoá</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="tile-body" id="title-delete">
+
+                        <h3>Bạn có chắc chắn muốn xoá thông tin này không ? </h3>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" onclick="thucHienXoa()" class="btn btn-primary">Đồng ý</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</div>
 </body>
 </html>
