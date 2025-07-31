@@ -46,7 +46,7 @@ public class NguoiDungImpl implements NguoiDungDao {
             if (obj.getMatKhau() != null) objNguoiDung.setMatKhau(obj.getMatKhau());
             if (obj.getEmail() != null) objNguoiDung.setEmail(obj.getEmail());
             if (obj.getThoiGianTao() != null) objNguoiDung.setThoiGianTao(obj.getThoiGianTao());
-            if (obj.getIdVaiTro() != 0) objNguoiDung.setIdVaiTro(obj.getIdVaiTro());
+            if (obj.getTenVaiTro() != null) objNguoiDung.setTenVaiTro(obj.getTenVaiTro());
 
             nguoiDungRepository.save(objNguoiDung);
             return true;

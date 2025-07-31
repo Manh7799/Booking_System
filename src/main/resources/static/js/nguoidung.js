@@ -14,7 +14,7 @@ function layDanhSachNguoiDung() {
                 thongtin += "<td>" + nd.matKhau + "</td>";
                 thongtin += "<td>" + nd.email + "</td>";
                 thongtin += "<td>" + nd.thoiGianTao + "</td>";
-                thongtin += "<td>" + nd.idVaiTro + "</td>";
+                thongtin += "<td>" + nd.tenVaiTro + "</td>";
                 var sua = "suaThongTin('" + nd.idNguoiDung + "')";
                 var xoa = "xoaThongTin('" + nd.idNguoiDung + "')";
                 thongtin += "<td><a data-bs-toggle=\"modal\" data-bs-target=\"#modalNguoiDung\" href='#' onclick=\"" + sua + "\" title='Sửa'>Sửa</a>&nbsp;";
@@ -43,7 +43,7 @@ function xuLyThemMoi() {
     var matKhau = $("#matKhau").val();
     var email = $("#email").val();
     var thoiGianTao = $("#thoiGianTao").val();
-    var idVaiTro = $("#idVaiTro").val();
+    var tenVaiTro = $("#tenVaiTro").val();
 
     //Khai báo mảng
     var formData = {}
@@ -52,7 +52,7 @@ function xuLyThemMoi() {
     formData["matKhau"] = matKhau;
     formData["email"] = email;
     formData["thoiGianTao"] = thoiGianTao;
-    formData["idVaiTro"] = idVaiTro;
+    formData["tenVaiTro"] = tenVaiTro;
 
     $.ajax({
         url: urlPost,
@@ -95,7 +95,7 @@ function thongTinChiTiet(idNguoiDung) {
             $("#matKhau").val(data.matKhau);
             $("#email").val(data.email);
             $("#thoiGianTao").val(data.thoiGianTao);
-            $("#idVaiTro").val(data.idVaiTro);
+            $("#tenVaiTro").val(data.tenVaiTro);
         }
     });
 }

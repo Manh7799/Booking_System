@@ -10,7 +10,7 @@ function layDanhSachVaiTro() {
             $.each(result, function (index, r) {
                 thongtin += "<tr>";
                 thongtin += "<td>" + r.idVaiTro + "</td>";
-                thongtin += "<td>" + r.ten + "</td>";
+                thongtin += "<td>" + r.tenVaiTro + "</td>";
                 var sua = "suaThongTin('" + r.idVaiTro + "')";
                 var xoa = "xoaThongTin('" + r.idVaiTro + "')";
                 thongtin += "<td><a data-bs-toggle=\"modal\" data-bs-target=\"#modalVaiTro\" href='#' onclick=\"" + sua + "\" title='Sửa '>Sửa</a>&nbsp;";
@@ -35,12 +35,12 @@ function xuLyThemMoi() {
     }
 
     var idVaiTro = $("#idVaiTro").val();
-    var ten = $("#ten").val();
+    var tenVaiTro = $("#tenVaiTro").val();
 
     //Khai báo mảng
     var formData = {}
     formData["idVaiTro"] = idVaiTro;
-    formData["ten"] = ten;
+    formData["tenVaiTro"] = tenVaiTro;
 
     $.ajax({
         url: urlPost,
@@ -79,7 +79,7 @@ function thongTinChiTiet(idVaiTro) {
             $("#modalTitle").text("Sửa thông tin");
             $("#hVaiTroId").val(data.idVaiTro);
             $("#idVaiTro").val(data.idVaiTro);
-            $("#ten").val(data.ten);
+            $("#tenVaiTro").val(data.tenVaiTro);
         }
     });
 }

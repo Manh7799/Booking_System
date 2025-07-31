@@ -10,8 +10,8 @@ public class VaiTro {
     @Column(name = "id_vai_tro")
     private int idVaiTro;
 
-    @Column(name = "ten",nullable = false, length = 50)
-    private String ten;
+    @Column(name = "ten_vai_tro",nullable = false, length = 50)
+    private String tenVaiTro;
 
     public int getIdVaiTro() {
         return idVaiTro;
@@ -21,11 +21,11 @@ public class VaiTro {
         this.idVaiTro = idVaiTro;
     }
 
-    public String getTen() {
-        return ten;
+    public String getTenVaiTro() {
+        return tenVaiTro;
     }
 
-    public void setTen(String ten) {
-        this.ten = ten;
+    public void setTenVaiTro(String tenVaiTro) {
+        this.tenVaiTro = tenVaiTro;
     }
 }

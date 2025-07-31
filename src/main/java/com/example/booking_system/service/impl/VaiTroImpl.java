@@ -42,7 +42,7 @@ public class VaiTroImpl implements VaiTroDao {
         VaiTro objVaiTro = getById(obj.getIdVaiTro());
 
         if (objVaiTro != null) {
-            if (obj.getTen() != null) objVaiTro.setTen(obj.getTen());
+            if (obj.getTenVaiTro() != null) objVaiTro.setTenVaiTro(obj.getTenVaiTro());
 
             vaiTroRepository.save(objVaiTro);
             return true;

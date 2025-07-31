@@ -24,8 +24,8 @@ public class NguoiDung {
     @Column(name = "thoi_gian_tao", nullable = true)
     private Date thoiGianTao;
 
-    @Column(name = "id_vai_tro", nullable = false)
-    private int idVaiTro;
+    @Column(name = "ten_vai_tro", nullable = false,  length = 50)
+    private String tenVaiTro;
 
     public int getIdNguoiDung() {
         return idNguoiDung;
@@ -67,11 +67,11 @@ public class NguoiDung {
         this.thoiGianTao = thoiGianTao;
     }
 
-    public int getIdVaiTro() {
-        return idVaiTro;
+    public String getTenVaiTro() {
+        return tenVaiTro;
     }
 
-    public void setIdVaiTro(int idVaiTro) {
-        this.idVaiTro = idVaiTro;
+    public void setTenVaiTro(String tenVaiTro) {
+        this.tenVaiTro = tenVaiTro;
     }
 }

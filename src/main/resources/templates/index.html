@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang chủ - Hệ thống đặt vé</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .welcome-section {
+            padding: 100px 0;
+            text-align: center;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            margin-bottom: 30px;
+            border-radius: 10px;
+        }
+        .user-info {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .feature-box {
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .feature-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #0d6efd;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-ticket-alt me-2"></i>Đặt Vé Online
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/"><i class="fas fa-home me-1"></i> Trang chủ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/lich-chieu"><i class="far fa-calendar-alt me-1"></i> Lịch chiếu</a>
+                    </li>
+                    <li sec:authorize="hasAuthority('ADMIN')" class="nav-item">
+                        <a class="nav-link" th:href="@{/admin/phim}"><i class="fas fa-cog me-1"></i> Quản trị</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>
+                            <span sec:authentication="name">Tài khoản</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/thong-tin"><i class="fas fa-user me-2"></i>Thông tin tài khoản</a></li>
+                            <li><a class="dropdown-item" href="/ve-cua-toi"><i class="fas fa-ticket-alt me-2"></i>Vé của tôi</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form th:action="@{/logout}" method="post" class="d-inline">
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+        <div class="container">
+            <h1 class="display-4 fw-bold mb-4">Chào mừng đến với hệ thống đặt vé</h1>
+            <p class="lead mb-4">Đặt vé nhanh chóng, tiện lợi và an toàn</p>
+            <a href="/phim" class="btn btn-light btn-lg">
+                <i class="fas fa-ticket-alt me-2"></i>Đặt vé ngay
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- User Info -->
+        <div sec:authorize="isAuthenticated()" class="user-info mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h4>Xin chào, <span sec:authentication="name">Người dùng</span>!</h4>
+                    <p class="mb-0">Bạn đã đăng nhập với quyền: <span sec:authentication="authorities"></span></p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <a href="/dat-ve" class="btn btn-primary">
+                        <i class="fas fa-ticket-alt me-1"></i>Đặt vé ngay
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <h2 class="text-center mb-4">Tính năng nổi bật</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="feature-icon">
+                        <i class="fas fa-film"></i>
+                    </div>
+                    <h3>Đa dạng phim</h3>
+                    <p>Hàng trăm bộ phim mới nhất, đa dạng thể loại được cập nhật thường xuyên.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Đặt vé dễ dàng</h3>
+                    <p>Chỉ vài thao tác đơn giản để đặt vé mọi lúc, mọi nơi.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="feature-icon">
+                        <i class="fas fa-tag"></i>
+                    </div>
+                    <h3>Ưu đãi hấp dẫn</h3>
+                    <p>Nhiều chương trình khuyến mãi, ưu đãi dành cho khách hàng thân thiết.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Now Showing Movies -->
+        <h2 class="text-center mt-5 mb-4">Phim đang chiếu</h2>
+        <div class="row" id="now-showing">
+            <!-- Movies will be loaded here via JavaScript -->
+            <div class="col-12 text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p>Đang tải danh sách phim...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white mt-5">
+        <div class="container py-4">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Về chúng tôi</h5>
+                    <p>Hệ thống đặt vé xem phim trực tuyến hàng đầu Việt Nam.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Liên hệ</h5>
+                    <p>Email: info@booking-system.com<br>Điện thoại: 1900 1234</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Theo dõi chúng tôi</h5>
+                    <div class="social-links">
+                        <a href="#" class="text-white me-2"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-white me-2"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white me-2"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center">
+                <p class="mb-0">&copy; 2023 Hệ thống đặt vé. Tất cả các quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Load now showing movies
+        document.addEventListener('DOMContentLoaded', function() {
+            // This would be an AJAX call to your backend in a real application
+            // For now, we'll use a timeout to simulate loading
+            setTimeout(function() {
+                const nowShowing = document.getElementById('now-showing');
+                nowShowing.innerHTML = `
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Tính năng đang được phát triển. Vui lòng quay lại sau!
+                        </div>
+                    </div>
+                `;
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
