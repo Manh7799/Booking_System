@@ -110,26 +110,55 @@
             return false;
         }
         // Hàm xử lý submit form
+        // Xử lý hiển thị preview ảnh
+        document.getElementById('anh').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const previewContainer = document.getElementById('imagePreview');
+            
+            if (file) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    previewContainer.innerHTML = `
+                        <img src="${e.target.result}" class="img-thumbnail" 
+                             style="max-height: 200px; max-width: 100%;" 
+                             alt="Preview ảnh">
+                    `;
+                }
+                
+                reader.readAsDataURL(file);
+            } else {
+                previewContainer.innerHTML = '';
+            }
+        });
+
+        // Xử lý submit form
         function handleSubmit(event) {
             event.preventDefault();
             
-            // Kiểm tra dữ liệu
-            if ($("#tenPhim").val() === '') {
+            // Kiểm tra dữ liệu bắt buộc
+            if ($("#tenPhim").val().trim() === '') {
                 alert("Vui lòng nhập tên phim");
                 return false;
             }
 
+            // Lấy form data
             let formData = new FormData($("#modalPhim")[0]);
             
+            // Xác định URL và method phù hợp (thêm mới hoặc cập nhật)
+            const id = $("#hPhimid").val();
+            const url = id ? `/api/phim/${id}` : '/api/phim';
+            const method = id ? 'PUT' : 'POST';
+            
             // Hiển thị loading
-            let submitBtn = $(event.target);
-            let originalBtnText = submitBtn.html();
+            const submitBtn = $(event.target).find('button[type="submit"]');
+            const originalBtnText = submitBtn.html();
             submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Đang xử lý...');
 
             // Gửi dữ liệu
             $.ajax({
-                url: '/api/phim',
-                type: 'POST',
+                url: url,
+                type: method,
                 data: formData,
                 processData: false,
                 contentType: false,
@@ -140,12 +169,18 @@
                 },
                 error: function(xhr) {
                     console.error('Lỗi:', xhr);
-                    alert('Có lỗi xảy ra: ' + (xhr.responseJSON?.message || 'Lỗi hệ thống'));
+                    let errorMessage = 'Có lỗi xảy ra';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage += ': ' + xhr.responseJSON.message;
+                    }
+                    alert(errorMessage);
                 },
                 complete: function() {
                     submitBtn.prop('disabled', false).html(originalBtnText);
                 }
             });
+            
+            return false;
         }
     </script>
 </head>
@@ -214,8 +249,8 @@
         </div>
     </div>
     <form id="modalPhim" method="post" class="modal fade" tabindex="-1" aria-labelledby="Thêm phim"
-          aria-hidden="true" enctype="multipart/form-data">
-        <div class="modal-dialog">
+          aria-hidden="true" enctype="multipart/form-data" onsubmit="return handleSubmit(event)">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalTitle">Thêm mới thông tin phim</h5>
@@ -303,7 +338,7 @@
                             <div class="col-md-9">
                                 <input type="file" id="anh" name="anh" class="form-control" accept="image/*">
                                 <div id="imagePreview" class="mt-2 text-center">
-                                    <img id="previewImg" src="" alt="Preview" style="max-width: 200px; max-height: 150px; display: none;">
+
                                 </div>
                             </div>
                         </div>
@@ -311,7 +346,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" onclick="handleSubmit(event)" class="btn btn-primary">Cập nhật</button>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                 </div>
             </div>

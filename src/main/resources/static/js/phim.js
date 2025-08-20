@@ -106,9 +106,13 @@ function hienThiDanhSachPhim(danhSachPhim) {
     } else {
         $.each(danhSachPhim, function (index, p) {
             thongtin += "<tr>";
+            // Thêm timestamp vào URL ảnh để tránh cache
+            const timestamp = new Date().getTime();
+            const imgSrc = p.anh ? `/images/${p.anh}?t=${timestamp}` : '/images/default-movie.jpg';
+            
             thongtin += "<td>" + p.idPhim + "</td>";
             thongtin += '<td style="width: 200px;"><div class="img-container" style="width: 100%; height: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f5f5f5;">' +
-                      '<img src="/images/' + (p.anh || 'default-movie.jpg') + '" alt="' + p.tenPhim + '" style="max-width: 100%; max-height: 100%; object-fit: contain;">' +
+                      `<img src="${imgSrc}" alt="${p.tenPhim}" style="max-width: 100%; max-height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='/images/default-movie.jpg';">` +
                       '</div></td>';
             thongtin += "<td>" + p.tenPhim + "</td>";
             thongtin += "<td>" + (p.daoDien || '') + "</td>";
@@ -212,61 +216,52 @@ function thayDoiSoLuongTrang() {
 }
 
 function xuLyThemMoi() {
-    //Lấy thông tin trên giao diện
+    // Tạo đối tượng FormData để lưu trữ dữ liệu form
+    var formData = new FormData();
     var id = $("#hPhimid").val();
-
     var urlPost = '/api/phim';
     var methodType = "POST";
 
-    //TH sửa
+    // TH sửa
     if (id.length > 0) {
         urlPost = '/api/phim/' + id;
         methodType = "PUT";
     }
 
-    var idPhim = $("#idPhim").val();
-    var tenPhim = $("#tenPhim").val();
-    var daoDien = $("#daoDien").val();
-    var dienVien = $("#dienVien").val();
-    var idTheLoai = $("#idTheLoai").val();
-    var khoiChieu = $("#khoiChieu").val();
-    var ngonNgu = $("#ngonNgu").val();
-    var thoiLuong = $("#thoiLuong").val();
-    var moTa = $("#moTa").val();
-    var anh = $("#anh").val();
-
-    //Khai báo mảng
-    var formData = {}
-    formData["idPhim"] = idPhim;
-    formData["tenPhim"] = tenPhim;
-    formData["daoDien"] = daoDien;
-    formData["dienVien"] = dienVien;
-    formData["idTheLoai"] = idTheLoai;
-    formData["khoiChieu"] = khoiChieu;
-    formData["ngonNgu"] = ngonNgu;
-    formData["thoiLuong"] = thoiLuong;
-    formData["moTa"] = moTa;
-    formData["anh"] = anh;
+    // Thêm dữ liệu vào FormData
+    formData.append("tenPhim", $("#tenPhim").val());
+    formData.append("daoDien", $("#daoDien").val());
+    formData.append("dienVien", $("#dienVien").val());
+    formData.append("idTheLoai", $("#idTheLoai").val());
+    formData.append("khoiChieu", $("#khoiChieu").val());
+    formData.append("ngonNgu", $("#ngonNgu").val());
+    formData.append("thoiLuong", $("#thoiLuong").val());
+    formData.append("moTa", $("#moTa").val());
+    
+    // Thêm file ảnh nếu có
+    var fileInput = document.getElementById('anh');
+    if (fileInput.files.length > 0) {
+        formData.append("anh", fileInput.files[0]);
+    }
 
     $.ajax({
         url: urlPost,
-        contentType: "application/json; charset=utf-8;",
-        dataType: "json",
-        data: JSON.stringify(formData),
         type: methodType,
+        data: formData,
+        processData: false,  // Không xử lý dữ liệu
+        contentType: false,  // Không đặt Content-Type
         success: function (data) {
             if (data.idPhim != null) {
-                $("#modalPhim").modal("hide")
-                //Reload lại trang
+                $("#modalPhim").modal("hide");
                 window.location.reload();
             } else {
                 $('#tile-body').nextAll(".spanError").remove();
-                $('#tile-body').after('<div class="alert alert-dismissible alert-danger spanError">' + data.name + '</div>')
-
+                $('#tile-body').after('<div class="alert alert-dismissible alert-danger spanError">' + (data.name || 'Có lỗi xảy ra') + '</div>');
             }
         },
-        error: function (error) {
-            alert("Có lỗi xảy ra " + error.name);
+        error: function (xhr, status, error) {
+            console.error("Lỗi:", error);
+            alert("Có lỗi xảy ra: " + error);
         }
     });
 }
