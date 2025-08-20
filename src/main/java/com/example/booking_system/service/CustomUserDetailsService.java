@@ -15,9 +15,16 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     NguoiDungRepository nguoiDungRepository;
 
+//    @Override
+//    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+//        NguoiDung nguoiDung = nguoiDungRepository.findByEmail(email)
+//                .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy người dùng"));
+//        return new CustomUserDetails(nguoiDung);
+//    }
+
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        NguoiDung nguoiDung = nguoiDungRepository.findByEmail(email)
+    public UserDetails loadUserByUsername(String ten) throws UsernameNotFoundException {
+        NguoiDung nguoiDung = nguoiDungRepository.findByTen(ten)
                 .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy người dùng"));
         return new CustomUserDetails(nguoiDung);
     }

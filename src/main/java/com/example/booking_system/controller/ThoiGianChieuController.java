@@ -10,4 +10,5 @@ public class ThoiGianChieuController {
     public String hienThidanhSachThoiGianChieu() {
         return "admin/ThoiGianChieuCallApi";
     }
+
 }

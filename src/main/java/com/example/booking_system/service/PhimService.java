@@ -1,7 +1,7 @@
 package com.example.booking_system.service;
 
-import com.example.booking_system.entity.Phim;
 import com.example.booking_system.dao.PhimDao;
+import com.example.booking_system.entity.Phim;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -56,10 +56,16 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" href="/"><i class="fas fa-home me-1"></i> Trang chủ</a>
+                        <a class="nav-link active" th:href="@{/index}"><i class="fas fa-home me-1"></i> Trang chủ</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/lich-chieu"><i class="far fa-calendar-alt me-1"></i> Lịch chiếu</a>
+                        <a class="nav-link" th:href="@{/thoigianchieu}"><i class="far fa-calendar-alt me-1"></i> Mua vé</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{#}"><i class="far fa-calendar-alt me-1"></i> Tin mới & Ưu đãi</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{#}"><i class="far fa-calendar-alt me-1"></i> Liên hệ</a>
                     </li>
                     <li sec:authorize="hasAuthority('ADMIN')" class="nav-item">
                         <a class="nav-link" th:href="@{/admin/phim}"><i class="fas fa-cog me-1"></i> Quản trị</a>
@@ -69,7 +75,7 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="fas fa-user-circle me-1"></i>
-                            <span sec:authentication="name">Tài khoản</span>
+                            <span>Tài khoản</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="/thong-tin"><i class="fas fa-user me-2"></i>Thông tin tài khoản</a></li>
@@ -103,19 +109,19 @@
     <!-- Main Content -->
     <div class="container">
         <!-- User Info -->
-        <div sec:authorize="isAuthenticated()" class="user-info mb-4">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <h4>Xin chào, <span sec:authentication="name">Người dùng</span>!</h4>
-                    <p class="mb-0">Bạn đã đăng nhập với quyền: <span sec:authentication="authorities"></span></p>
-                </div>
-                <div class="col-md-4 text-md-end">
-                    <a href="/dat-ve" class="btn btn-primary">
-                        <i class="fas fa-ticket-alt me-1"></i>Đặt vé ngay
-                    </a>
-                </div>
-            </div>
-        </div>
+<!--        <div sec:authorize="isAuthenticated()" class="user-info mb-4">-->
+<!--            <div class="row align-items-center">-->
+<!--                <div class="col-md-8">-->
+<!--                    <h4>Xin chào, <span sec:authentication="name">Người dùng</span>!</h4>-->
+<!--                    <p class="mb-0">Bạn đã đăng nhập với quyền: <span sec:authentication="authorities"></span></p>-->
+<!--                </div>-->
+<!--                <div class="col-md-4 text-md-end">-->
+<!--                    <a href="/dat-ve" class="btn btn-primary">-->
+<!--                        <i class="fas fa-ticket-alt me-1"></i>Đặt vé ngay-->
+<!--                    </a>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
 
         <!-- Features -->
         <h2 class="text-center mb-4">Tính năng nổi bật</h2>
@@ -151,14 +157,10 @@
 
         <!-- Now Showing Movies -->
         <h2 class="text-center mt-5 mb-4">Phim đang chiếu</h2>
-        <div class="row" id="now-showing">
-            <!-- Movies will be loaded here via JavaScript -->
-            <div class="col-12 text-center">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <p>Đang tải danh sách phim...</p>
-            </div>
+        <div>
+            <th:block th:each = "p : ${listPhim}">
+                <span th:text="${p.tenPhim}"></span>
+            </th:block>
         </div>
     </div>
 

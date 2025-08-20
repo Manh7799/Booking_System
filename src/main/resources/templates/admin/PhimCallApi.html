@@ -48,28 +48,105 @@
             $("#thoiLuong").val("");
             $("#moTa").val("");
             $("#anh").val("");
+            $("#previewImg").hide().attr('src', '');
         }
 
-        /*
-        Ham xu ly them moi hoac cap nhat
-         */
+        // Xử lý hiển thị preview ảnh trước khi upload
+        document.getElementById('anh').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                const previewImg = document.getElementById('previewImg');
+                
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    previewImg.style.display = 'block';
+                }
+                
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Hàm xử lý khi submit form
         function themMoiHoacCapNhat() {
-            let form = $("#modalPhim").validate({
-                rules: {
-                    tenPhim: "required",
+            let form = $("#modalPhim");
+            let formData = new FormData(form[0]);
+            
+            // Kiểm tra dữ liệu
+            if ($("#tenPhim").val() === '') {
+                alert("Vui lòng nhập tên phim");
+                return false;
+            }
+
+            // Gửi dữ liệu form bằng AJAX
+            $.ajax({
+                url: '/api/phim',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    alert('Thao tác thành công!');
+                    $("#modalPhim").modal('hide');
+                    layDanhSachPhim(currentPage, itemsPerPage);
                 },
-                messages: {
-                    tenPhim: "Bạn cần phải nhập tên phim",
-                },
-                submitHandler: function () {
-                    if (form.valid()) {
-                        //Gọi hàm thêm mới hoặc sửa
-                        xuLyThemMoi();
+                error: function(xhr, status, error) {
+                    console.error('Lỗi chi tiết:', xhr.responseText);
+                    let errorMessage = 'Có lỗi xảy ra khi lưu dữ liệu.\n';
+                    
+                    // Kiểm tra nếu có thông báo lỗi từ server
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage += 'Chi tiết: ' + xhr.responseJSON.message;
+                    } else if (xhr.statusText) {
+                        errorMessage += 'Mã lỗi: ' + xhr.status + ' - ' + xhr.statusText;
+                    } else {
+                        errorMessage += 'Không thể kết nối đến máy chủ. Vui lòng thử lại sau.';
                     }
+                    
+                    alert(errorMessage);
+                }
+            });
+            
+            return false;
+        }
+        // Hàm xử lý submit form
+        function handleSubmit(event) {
+            event.preventDefault();
+            
+            // Kiểm tra dữ liệu
+            if ($("#tenPhim").val() === '') {
+                alert("Vui lòng nhập tên phim");
+                return false;
+            }
+
+            let formData = new FormData($("#modalPhim")[0]);
+            
+            // Hiển thị loading
+            let submitBtn = $(event.target);
+            let originalBtnText = submitBtn.html();
+            submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Đang xử lý...');
+
+            // Gửi dữ liệu
+            $.ajax({
+                url: '/api/phim',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    alert('Thao tác thành công!');
+                    $("#modalPhim").modal('hide');
+                    layDanhSachPhim(currentPage, itemsPerPage);
+                },
+                error: function(xhr) {
+                    console.error('Lỗi:', xhr);
+                    alert('Có lỗi xảy ra: ' + (xhr.responseJSON?.message || 'Lỗi hệ thống'));
+                },
+                complete: function() {
+                    submitBtn.prop('disabled', false).html(originalBtnText);
                 }
             });
         }
-
     </script>
 </head>
 <body>
@@ -137,7 +214,7 @@
         </div>
     </div>
     <form id="modalPhim" method="post" class="modal fade" tabindex="-1" aria-labelledby="Thêm phim"
-          aria-hidden="true">
+          aria-hidden="true" enctype="multipart/form-data">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -216,8 +293,7 @@
                                 Mô tả:
                             </label>
                             <div class="col-md-9">
-                                <input id="moTa" name="moTa" type="text" class="form-control"
-                                       placeholder="Nhập mô tả "/>
+                                <input id="moTa" name="moTa" type="text" class="form-control" placeholder="Nhập mô tả"/>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -225,14 +301,17 @@
                                 Ảnh:
                             </label>
                             <div class="col-md-9">
-                                <input id="anh" name="anh" type="text" class="form-control"/>
+                                <input type="file" id="anh" name="anh" class="form-control" accept="image/*">
+                                <div id="imagePreview" class="mt-2 text-center">
+                                    <img id="previewImg" src="" alt="Preview" style="max-width: 200px; max-height: 150px; display: none;">
+                                </div>
                             </div>
                         </div>
 
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" onclick="themMoiHoacCapNhat()" class="btn btn-primary">Cập nhật</button>
+                    <button type="button" onclick="handleSubmit(event)" class="btn btn-primary">Cập nhật</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                 </div>
             </div>

@@ -44,7 +44,7 @@ function populateTheLoaiDropdown() {
 //             $.each(result, function (index, p) {
 //                 thongtin += "<tr>";
 //                 thongtin += "<td>" + p.idPhim + "</td>";
-//                 thongtin += "<td>" + p.anh + "</td>";
+//                 thongtin += '<td><img src="/images/' + (p.anh || 'default-movie.jpg') + '" alt="' + p.tenPhim + '" style="width: 100px; height: auto;"></td>';
 //                 thongtin += "<td>" + p.tenPhim + "</td>";
 //                 thongtin += "<td>" + p.daoDien + "</td>";
 //                 thongtin += "<td>" + p.dienVien + "</td>";
@@ -107,7 +107,9 @@ function hienThiDanhSachPhim(danhSachPhim) {
         $.each(danhSachPhim, function (index, p) {
             thongtin += "<tr>";
             thongtin += "<td>" + p.idPhim + "</td>";
-            thongtin += "<td>" + (p.anh || '') + "</td>";
+            thongtin += '<td style="width: 200px;"><div class="img-container" style="width: 100%; height: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f5f5f5;">' +
+                      '<img src="/images/' + (p.anh || 'default-movie.jpg') + '" alt="' + p.tenPhim + '" style="max-width: 100%; max-height: 100%; object-fit: contain;">' +
+                      '</div></td>';
             thongtin += "<td>" + p.tenPhim + "</td>";
             thongtin += "<td>" + (p.daoDien || '') + "</td>";
             thongtin += "<td>" + (p.dienVien || '') + "</td>";
