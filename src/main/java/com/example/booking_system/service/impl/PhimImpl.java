@@ -59,7 +59,7 @@ public class PhimImpl implements PhimDao {
             if (obj.getNgonNgu() != null) objPhim.setNgonNgu(obj.getNgonNgu());
             if (obj.getMoTa() != null) objPhim.setMoTa(obj.getMoTa());
             if (obj.getAnh() != null) objPhim.setAnh(obj.getAnh());
-
+            if (obj.getTrangThai() != null) objPhim.setTrangThai(obj.getTrangThai());
             phimRepository.save(objPhim);
             return true;
         }

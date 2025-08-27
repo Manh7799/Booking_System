@@ -79,19 +79,20 @@ public class PhimAPIController {
 
     @PostMapping(value = "/phim", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> themMoiPhim(
-            @RequestParam(value = "anh", required = false) MultipartFile file,
-            @RequestParam String tenPhim,
-            @RequestParam String daoDien,
-            @RequestParam String dienVien,
-            @RequestParam int idTheLoai,
-            @RequestParam String khoiChieu,
-            @RequestParam String ngonNgu,
-            @RequestParam String thoiLuong,
-            @RequestParam String moTa) {
-        
+            @RequestPart(value = "anh", required = false) MultipartFile file,
+            @RequestPart("tenPhim") String tenPhim,
+            @RequestPart("daoDien") String daoDien,
+            @RequestPart("dienVien") String dienVien,
+            @RequestPart("idTheLoai") int idTheLoai,
+            @RequestPart("khoiChieu") String khoiChieu,
+            @RequestPart("ngonNgu") String ngonNgu,
+            @RequestPart("thoiLuong") String thoiLuong,
+            @RequestPart("moTa") String moTa,
+            @RequestPart("trangThai") String trangThai) {
+
         try {
             Phim phimMoi = new Phim();
-            
+
             // Xử lý upload file nếu có
             if (file != null && !file.isEmpty()) {
                 String fileName = file.getOriginalFilename();
@@ -100,11 +101,11 @@ public class PhimAPIController {
                 file.transferTo(dest);
                 phimMoi.setAnh(fileName);
             }
-            
+
             // Chuyển đổi chuỗi ngày tháng sang đối tượng Date
             java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd");
             Date ngayKhoiChieu = dateFormat.parse(khoiChieu);
-            
+
             // Thiết lập các thông tin cho phim mới
             phimMoi.setTenPhim(tenPhim);
             phimMoi.setDaoDien(daoDien);
@@ -114,7 +115,8 @@ public class PhimAPIController {
             phimMoi.setNgonNgu(ngonNgu);
             phimMoi.setThoiLuong(thoiLuong);
             phimMoi.setMoTa(moTa);
-            
+            phimMoi.setTrangThai(trangThai);
+
             boolean kq = phimService.themMoi(phimMoi);
             if (kq) {
                 return new ResponseEntity<Phim>(phimMoi, HttpStatus.OK);
@@ -132,15 +134,16 @@ public class PhimAPIController {
     @PutMapping(value = "/phim/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> capNhatPhim(
             @PathVariable("id") int id,
-            @RequestParam(value = "anh", required = false) MultipartFile file,
-            @RequestParam String tenPhim,
-            @RequestParam String daoDien,
-            @RequestParam String dienVien,
-            @RequestParam int idTheLoai,
-            @RequestParam String khoiChieu,
-            @RequestParam String ngonNgu,
-            @RequestParam String thoiLuong,
-            @RequestParam String moTa) {
+            @RequestPart(value = "anh", required = false) MultipartFile file,
+            @RequestPart("tenPhim") String tenPhim,
+            @RequestPart("daoDien") String daoDien,
+            @RequestPart("dienVien") String dienVien,
+            @RequestPart("idTheLoai") int idTheLoai,
+            @RequestPart("khoiChieu") String khoiChieu,
+            @RequestPart("ngonNgu") String ngonNgu,
+            @RequestPart("thoiLuong") String thoiLuong,
+            @RequestPart("moTa") String moTa,
+            @RequestPart("trangThai") String trangThai) {
 
         Phim objPhim_2 = phimService.layChiTiet(id);
 
@@ -172,6 +175,7 @@ public class PhimAPIController {
                 objPhim_2.setNgonNgu(ngonNgu);
                 objPhim_2.setThoiLuong(thoiLuong);
                 objPhim_2.setMoTa(moTa);
+                objPhim_2.setTrangThai(trangThai);
 
                 boolean kq = phimService.capNhat(objPhim_2);
                 if (kq) {

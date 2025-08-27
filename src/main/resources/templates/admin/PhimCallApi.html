@@ -26,6 +26,7 @@
                 layDanhSachPhim(currentPage, itemsPerPage);
             });
         }
+
         function suaThongTin(idPhim) {
             //Hiển thị thông tin chi tiết
             thongTinChiTiet(idPhim);
@@ -37,7 +38,8 @@
 
         function hienThiThemMoi() {
             $("#modalTitle").text("Thêm mới thông tin phim");
-            $("#hPhimid").text("");
+            $("#hPhimid").val("");
+            $("#idPhim").val("");
             $("#tenPhim").val("");
             $("#daoDien").val("");
             $("#dienVien").val("");
@@ -47,22 +49,26 @@
             $("#ngonNgu").val("");
             $("#thoiLuong").val("");
             $("#moTa").val("");
+            $("#trangThai").val("");
+
+            // Reset ảnh
+            $("#currentImageContainer").hide();
             $("#anh").val("");
-            $("#previewImg").hide().attr('src', '');
+            $("#imagePreview").html('');
         }
 
         // Xử lý hiển thị preview ảnh trước khi upload
-        document.getElementById('anh').addEventListener('change', function(event) {
+        document.getElementById('anh').addEventListener('change', function (event) {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 const previewImg = document.getElementById('previewImg');
-                
-                reader.onload = function(e) {
+
+                reader.onload = function (e) {
                     previewImg.src = e.target.result;
                     previewImg.style.display = 'block';
                 }
-                
+
                 reader.readAsDataURL(file);
             }
         });
@@ -71,7 +77,7 @@
         function themMoiHoacCapNhat() {
             let form = $("#modalPhim");
             let formData = new FormData(form[0]);
-            
+
             // Kiểm tra dữ liệu
             if ($("#tenPhim").val() === '') {
                 alert("Vui lòng nhập tên phim");
@@ -85,15 +91,15 @@
                 data: formData,
                 processData: false,
                 contentType: false,
-                success: function(response) {
+                success: function (response) {
                     alert('Thao tác thành công!');
                     $("#modalPhim").modal('hide');
                     layDanhSachPhim(currentPage, itemsPerPage);
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     console.error('Lỗi chi tiết:', xhr.responseText);
                     let errorMessage = 'Có lỗi xảy ra khi lưu dữ liệu.\n';
-                    
+
                     // Kiểm tra nếu có thông báo lỗi từ server
                     if (xhr.responseJSON && xhr.responseJSON.message) {
                         errorMessage += 'Chi tiết: ' + xhr.responseJSON.message;
@@ -102,30 +108,31 @@
                     } else {
                         errorMessage += 'Không thể kết nối đến máy chủ. Vui lòng thử lại sau.';
                     }
-                    
+
                     alert(errorMessage);
                 }
             });
-            
+
             return false;
         }
+
         // Hàm xử lý submit form
         // Xử lý hiển thị preview ảnh
-        document.getElementById('anh').addEventListener('change', function(event) {
+        document.getElementById('anh').addEventListener('change', function (event) {
             const file = event.target.files[0];
             const previewContainer = document.getElementById('imagePreview');
-            
+
             if (file) {
                 const reader = new FileReader();
-                
-                reader.onload = function(e) {
+
+                reader.onload = function (e) {
                     previewContainer.innerHTML = `
                         <img src="${e.target.result}" class="img-thumbnail" 
                              style="max-height: 200px; max-width: 100%;" 
                              alt="Preview ảnh">
                     `;
                 }
-                
+
                 reader.readAsDataURL(file);
             } else {
                 previewContainer.innerHTML = '';
@@ -135,7 +142,7 @@
         // Xử lý submit form
         function handleSubmit(event) {
             event.preventDefault();
-            
+
             // Kiểm tra dữ liệu bắt buộc
             if ($("#tenPhim").val().trim() === '') {
                 alert("Vui lòng nhập tên phim");
@@ -144,12 +151,12 @@
 
             // Lấy form data
             let formData = new FormData($("#modalPhim")[0]);
-            
+
             // Xác định URL và method phù hợp (thêm mới hoặc cập nhật)
             const id = $("#hPhimid").val();
             const url = id ? `/api/phim/${id}` : '/api/phim';
             const method = id ? 'PUT' : 'POST';
-            
+
             // Hiển thị loading
             const submitBtn = $(event.target).find('button[type="submit"]');
             const originalBtnText = submitBtn.html();
@@ -162,12 +169,12 @@
                 data: formData,
                 processData: false,
                 contentType: false,
-                success: function(response) {
+                success: function (response) {
                     alert('Thao tác thành công!');
                     $("#modalPhim").modal('hide');
                     layDanhSachPhim(currentPage, itemsPerPage);
                 },
-                error: function(xhr) {
+                error: function (xhr) {
                     console.error('Lỗi:', xhr);
                     let errorMessage = 'Có lỗi xảy ra';
                     if (xhr.responseJSON && xhr.responseJSON.message) {
@@ -175,11 +182,11 @@
                     }
                     alert(errorMessage);
                 },
-                complete: function() {
+                complete: function () {
                     submitBtn.prop('disabled', false).html(originalBtnText);
                 }
             });
-            
+
             return false;
         }
     </script>
@@ -218,6 +225,7 @@
                             <th>Ngôn ngữ</th>
                             <th>Thời lượng</th>
                             <th>Mô tả</th>
+                            <th>Trạng thái</th>
                             <th style="width: 100px;"></th>
                         </tr>
                         </thead>
@@ -235,7 +243,7 @@
                             <select id="itemsPerPage" class="form-select d-inline-block w-auto"
                                     onchange="thayDoiSoLuongTrang()">
                                 <option value="5">5 phim/trang</option>
-                                <option value="10" selected >10 phim/trang</option>
+                                <option value="10" selected>10 phim/trang</option>
                                 <option value="20">20 phim/trang</option>
                             </select>
                         </div>
@@ -333,16 +341,31 @@
                         </div>
                         <div class="form-group row">
                             <label class="col-md-3">
-                                Ảnh:
+                                Trạng thái:
                             </label>
                             <div class="col-md-9">
-                                <input type="file" id="anh" name="anh" class="form-control" accept="image/*">
-                                <div id="imagePreview" class="mt-2 text-center">
-
-                                </div>
+                                <input id="trangThai" name="trangThai" type="text" class="form-control"
+                                       placeholder="Nhập trạng thái"/>
                             </div>
                         </div>
+                        <div class="form-group row">
+                            <label class="col-md-3">
+                                Ảnh phim:
+                            </label>
+                            <div class="col-md-9">
+                                <!-- Hiển thị ảnh hiện tại -->
+                                <div id="currentImageContainer" class="mb-3" style="display: none;">
+                                    <div>Ảnh hiện tại: <span id="currentImageName" class="fw-bold"></span></div>
+                                    <img id="currentImagePreview" src="" class="img-thumbnail mt-2"
+                                         style="max-height: 200px;">
+                                    <div class="form-text">Để trống nếu muốn giữ ảnh hiện tại</div>
+                                </div>
 
+                                <!-- Input chọn ảnh mới -->
+                                <input type="file" class="form-control" id="anh" name="anh" accept="image/*">
+                                <div id="imagePreview" class="mt-2"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -350,6 +373,7 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                 </div>
             </div>
+
         </div>
     </form>
 

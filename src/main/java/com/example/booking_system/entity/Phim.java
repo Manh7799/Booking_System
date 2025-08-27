@@ -38,6 +38,9 @@ public class Phim {
     @Column(name = "anh", nullable = true, length = 255)
     private String anh;
 
+    @Column(name = "trang_thai", nullable = true, length = 50)
+    private String trangThai;
+
     public int getIdPhim() {
         return idPhim;
     }
@@ -116,5 +119,13 @@ public class Phim {
 
     public void setAnh(String anh) {
         this.anh = anh;
+    }
+
+    public String getTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(String trangThai) {
+        this.trangThai = trangThai;
     }
 }
