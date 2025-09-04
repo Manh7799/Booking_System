@@ -61,13 +61,13 @@
 
 ### 📦 Cài đặt & chạy dự án
 1. Clone dự án
-```mermaid
+```bash
    git clone https://github.com/your-username/booking-system.git
    cd booking-system
 ```
 2. Cấu hình Database
 - Trong src/main/resources/application.properties:
-```mermaid
+```bash
 spring.datasource.url=jdbc:mysql://localhost:3306/booking_system
 spring.datasource.username=root
 spring.datasource.password=yourpassword
@@ -75,7 +75,7 @@ spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 ```
 3. Chạy ứng dụng
-```mermaid
+```bash
 ./mvnw spring-boot:run
 ```
 ### 📖 API Endpoints (ví dụ)
