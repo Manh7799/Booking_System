@@ -33,7 +33,7 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/home", true)  // Thay đổi thành /home
+                        .defaultSuccessUrl("/index", true)
                         .failureUrl("/login?error=true")
                         .permitAll()
                 )

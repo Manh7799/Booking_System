@@ -9,9 +9,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 @Controller
 public class PhimController {
+    
+    private static final Logger logger = Logger.getLogger(PhimController.class.getName());
 
     @Autowired
     PhimService phimService;
@@ -21,9 +24,17 @@ public class PhimController {
         return "admin/PhimCallApi";
     }
 
-    @RequestMapping( "/")
+    @RequestMapping( "/index" )
     public String danhSachPhim(Model model) {
-        List<Phim> phimList = phimService.layDanhSach();
+        List<Phim> phimList = phimService.layDanhSachDangChieu();
+        
+        // Log để kiểm tra dữ liệu
+        logger.info("Số lượng phim đang chiếu: " + (phimList != null ? phimList.size() : 0));
+        if (phimList != null) {
+            for (Phim phim : phimList) {
+                logger.info("Phim đang chiếu: " + phim.getTenPhim() + " - Trạng thái: " + phim.getTrangThai());
+            }
+        }
 
         model.addAttribute("listPhim", phimList);
 

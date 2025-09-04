@@ -76,19 +76,49 @@ function hienThiDanhSachPhim(danhSachPhim) {
             const timestamp = new Date().getTime();
             const imgSrc = p.anh ? `/images/${p.anh}?t=${timestamp}` : '/images/default-movie.jpg';
             
-            thongtin += "<td>" + p.idPhim + "</td>";
-            thongtin += '<td style="width: 200px;"><div class="img-container" style="width: 100%; height: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f5f5f5;">' +
-                      `<img src="${imgSrc}" alt="${p.tenPhim}" style="max-width: 100%; max-height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='/images/default-movie.jpg';">` +
+            thongtin += "<td style='width: 50px;'>" + p.idPhim + "</td>";
+            // Cố định kích thước ảnh 150x200px
+            thongtin += '<td style="width: 150px;">' +
+                      '<div style="width: 150px; height: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f5f5f5; margin: 0 auto;">' +
+                      `<img src="${imgSrc}" alt="${p.tenPhim}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.src='/images/default-movie.jpg';">` +
                       '</div></td>';
-            thongtin += "<td>" + p.tenPhim + "</td>";
-            thongtin += "<td>" + (p.daoDien || '') + "</td>";
-            thongtin += "<td>" + (p.dienVien || '') + "</td>";
-            thongtin += "<td>" + layTenTheLoai(p.idTheLoai) + "</td>";
-            thongtin += "<td>" + (p.khoiChieu || '') + "</td>";
-            thongtin += "<td>" + (p.ngonNgu || '') + "</td>";
-            thongtin += "<td>" + (p.thoiLuong || '') + "</td>";
-            thongtin += "<td>" + (p.moTa || '') + "</td>";
-            thongtin += "<td>" + (p.trangThai || '') + "</td>";
+            // Cố định kích thước cột ảnh
+            // Định dạng lại ngày tháng năm
+            let ngayKhoiChieu = '';
+            if (p.khoiChieu) {
+                try {
+                    // Xử lý múi giờ Việt Nam (UTC+7)
+                    const date = new Date(p.khoiChieu);
+                    // Điều chỉnh về múi giờ Việt Nam (UTC+7)
+                    const utc = date.getTime() + (date.getTimezoneOffset() * 60000);
+                    const vnDate = new Date(utc + (3600000 * 7));
+
+                    const day = String(vnDate.getDate()).padStart(2, '0');
+                    const month = String(vnDate.getMonth() + 1).padStart(2, '0');
+                    const year = vnDate.getFullYear();
+                    ngayKhoiChieu = `${day}/${month}/${year}`;
+                } catch (e) {
+                    console.error('Lỗi định dạng ngày:', e);
+                    // Nếu có lỗi, hiển thị nguyên gốc và cắt bỏ phần giờ phút giây
+                    ngayKhoiChieu = p.khoiChieu.split('T')[0].split('-').reverse().join('/');
+                }
+            }
+
+            thongtin += "<td style='width: 200px;'>" + p.tenPhim + "</td>";
+            thongtin += "<td style='width: 100px;'>" + (p.daoDien || '') + "</td>";
+            thongtin += "<td style='width: 200px;'>" + (p.dienVien || '') + "</td>";
+            thongtin += "<td style='width: 100px;'>" + layTenTheLoai(p.idTheLoai) + "</td>";
+            thongtin += "<td style='width: 100px;'>" + ngayKhoiChieu + "</td>";
+            thongtin += "<td style='width: 100px;'>" + (p.ngonNgu || '') + "</td>";
+            thongtin += "<td style='width: 80px;'>" + (p.thoiLuong || '') + "</td>";
+            
+            
+            // Hiển thị mô tả theo chiều ngang
+            let moTa = p.moTa || '';
+            let moTaRutGon = moTa.length > 200 ? moTa.substring(0, 200) + '...' : moTa;
+            thongtin += "<td style='max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;' title='" + moTa.replace(/"/g, '&quot;') + "'>" + moTaRutGon + "</td>";
+            
+            thongtin += "<td style='width: 100px;'>" + (p.trangThai || '') + "</td>";
 
             var sua = "suaThongTin('" + p.idPhim + "')";
             var xoa = "xoaThongTin('" + p.idPhim + "')";
@@ -175,7 +205,31 @@ function thongTinChiTiet(idPhim) {
             $("#dienVien").val(data.dienVien || '');
             populateTheLoaiDropdown();
             $("#idTheLoai").val(data.idTheLoai || '');
-            $("#khoiChieu").val(data.khoiChieu || '');
+            
+            // Định dạng lại ngày khởi chiếu cho input date
+            if (data.khoiChieu) {
+                try {
+                    const date = new Date(data.khoiChieu);
+                    // Điều chỉnh về múi giờ Việt Nam (UTC+7)
+                    const utc = date.getTime() + (date.getTimezoneOffset() * 60000);
+                    const vnDate = new Date(utc + (3600000 * 7));
+                    
+                    const day = String(vnDate.getDate()).padStart(2, '0');
+                    const month = String(vnDate.getMonth() + 1).padStart(2, '0');
+                    const year = vnDate.getFullYear();
+                    
+                    // Định dạng YYYY-MM-DD cho input type="date"
+                    const formattedDate = `${day}-${month}-${year}`;
+                    $("#khoiChieu").val(formattedDate);
+                } catch (e) {
+                    console.error('Lỗi định dạng ngày:', e);
+                    // Nếu có lỗi, giữ nguyên giá trị gốc
+                    $("#khoiChieu").val(data.khoiChieu.split('T')[0]);
+                }
+            } else {
+                $("#khoiChieu").val('');
+            }
+            
             $("#ngonNgu").val(data.ngonNgu || '');
             $("#thoiLuong").val(data.thoiLuong || '');
             $("#moTa").val(data.moTa || '');

@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PhimService {
@@ -18,10 +19,17 @@ public class PhimService {
     public List<Phim> layDanhSach() {
         return phimDao.getList();
     }
+    
+    public List<Phim> layDanhSachDangChieu() {
+        return phimDao.getList().stream()
+                .filter(phim -> "Đang chiếu".equals(phim.getTrangThai()))
+                .collect(Collectors.toList());
+    }
 
     public Page<Phim> layDanhSachPhanTrang(Pageable pageable) {
         return phimDao.getListWithPagination(pageable);
     }
+
     public Phim layChiTiet(int idPhim) {
         return phimDao.getById(idPhim);
     }
