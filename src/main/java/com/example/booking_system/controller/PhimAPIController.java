@@ -79,16 +79,16 @@ public class PhimAPIController {
 
     @PostMapping(value = "/phim", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> themMoiPhim(
-            @RequestPart(value = "anh", required = false) MultipartFile file,
-            @RequestPart("tenPhim") String tenPhim,
-            @RequestPart("daoDien") String daoDien,
-            @RequestPart("dienVien") String dienVien,
-            @RequestPart("idTheLoai") int idTheLoai,
-            @RequestPart("khoiChieu") String khoiChieu,
-            @RequestPart("ngonNgu") String ngonNgu,
-            @RequestPart("thoiLuong") String thoiLuong,
-            @RequestPart("moTa") String moTa,
-            @RequestPart("trangThai") String trangThai) {
+            @RequestParam("anh") MultipartFile file,
+            @RequestParam("tenPhim") String tenPhim,
+            @RequestParam("daoDien") String daoDien,
+            @RequestParam("dienVien") String dienVien,
+            @RequestParam("idTheLoai") int idTheLoai,
+            @RequestParam("khoiChieu") String khoiChieu,
+            @RequestParam("ngonNgu") String ngonNgu,
+            @RequestParam("thoiLuong") String thoiLuong,
+            @RequestParam("moTa") String moTa,
+            @RequestParam("trangThai") String trangThai) {
 
         try {
             Phim phimMoi = new Phim();
@@ -131,19 +131,19 @@ public class PhimAPIController {
         }
     }
 
-    @PutMapping(value = "/phim/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/phim/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> capNhatPhim(
             @PathVariable("id") int id,
-            @RequestPart(value = "anh", required = false) MultipartFile file,
-            @RequestPart("tenPhim") String tenPhim,
-            @RequestPart("daoDien") String daoDien,
-            @RequestPart("dienVien") String dienVien,
-            @RequestPart("idTheLoai") int idTheLoai,
-            @RequestPart("khoiChieu") String khoiChieu,
-            @RequestPart("ngonNgu") String ngonNgu,
-            @RequestPart("thoiLuong") String thoiLuong,
-            @RequestPart("moTa") String moTa,
-            @RequestPart("trangThai") String trangThai) {
+            @RequestParam(value = "anh", required = false) MultipartFile file,
+            @RequestParam("tenPhim") String tenPhim,
+            @RequestParam("daoDien") String daoDien,
+            @RequestParam("dienVien") String dienVien,
+            @RequestParam("idTheLoai") int idTheLoai,
+            @RequestParam("khoiChieu") String khoiChieu,
+            @RequestParam("ngonNgu") String ngonNgu,
+            @RequestParam("thoiLuong") String thoiLuong,
+            @RequestParam("moTa") String moTa,
+            @RequestParam("trangThai") String trangThai) {
 
         Phim objPhim_2 = phimService.layChiTiet(id);
 

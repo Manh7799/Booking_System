@@ -10,9 +10,13 @@ public class DangNhapController {
         return "login";
     }
 
-    @GetMapping("/index")
+    @GetMapping("/")
     public String home() {
         return "index";
     }
 
+    @GetMapping("/home")
+    public String homeAfterLogin() {
+        return "index";
+    }
 }

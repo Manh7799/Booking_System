@@ -103,6 +103,129 @@ function hienThiDanhSachPhim(danhSachPhim) {
     $("#dsPhim").html(thongtin);
 }
 
+function xuLyThemMoi() {
+    // Tạo đối tượng FormData để lưu trữ dữ liệu form
+    var formData = new FormData();
+    var id = $("#hPhimid").val();
+    var urlPost = '/api/phim';
+    var methodType = "POST";
+
+    // TH sửa
+    if (id.length > 0) {
+        urlPost = '/api/phim/' + id;
+        methodType = "PUT";
+    }
+
+    // Thêm dữ liệu vào FormData
+    formData.append("tenPhim", $("#tenPhim").val());
+    formData.append("daoDien", $("#daoDien").val());
+    formData.append("dienVien", $("#dienVien").val());
+    formData.append("idTheLoai", $("#idTheLoai").val());
+    formData.append("khoiChieu", $("#khoiChieu").val());
+    formData.append("ngonNgu", $("#ngonNgu").val());
+    formData.append("thoiLuong", $("#thoiLuong").val());
+    formData.append("moTa", $("#moTa").val());
+
+    // Thêm file ảnh nếu có
+    var fileInput = document.getElementById('anh');
+    if (fileInput.files.length > 0) {
+        formData.append("anh", fileInput.files[0]);
+    }
+
+    $.ajax({
+        url: urlPost,
+        type: methodType,
+        data: formData,
+        processData: false,  // Không xử lý dữ liệu
+        contentType: false,  // Không đặt Content-Type
+        success: function (data) {
+            if (data.idPhim != null) {
+                $("#modalPhim").modal("hide");
+                window.location.reload();
+            } else {
+                $('#tile-body').nextAll(".spanError").remove();
+                $('#tile-body').after('<div class="alert alert-dismissible alert-danger spanError">' + (data.name || 'Có lỗi xảy ra') + '</div>');
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("Lỗi:", error);
+            alert("Có lỗi xảy ra: " + error);
+        }
+    });
+}
+
+/*
+        * Hàm hiển thị thông tin chi tiết chủ đề bằng jquery ajax
+*/
+function thongTinChiTiet(idPhim) {
+    $.ajax({
+        type: "GET",
+        url: "/api/phim/" + idPhim,
+        data: { id: idPhim },
+        dataType: 'json',
+        contentType: "application/json; charset=utf-8",
+        async: true,
+        success: function (data) {
+            // Hiển thị lên giao diện
+            $("#modalTitle").text("Sửa thông tin phim");
+            $("#hPhimid").val(data.idPhim);
+            $("#idPhim").val(data.idPhim);
+            $("#tenPhim").val(data.tenPhim);
+            $("#daoDien").val(data.daoDien || '');
+            $("#dienVien").val(data.dienVien || '');
+            populateTheLoaiDropdown();
+            $("#idTheLoai").val(data.idTheLoai || '');
+            $("#khoiChieu").val(data.khoiChieu || '');
+            $("#ngonNgu").val(data.ngonNgu || '');
+            $("#thoiLuong").val(data.thoiLuong || '');
+            $("#moTa").val(data.moTa || '');
+            $("#trangThai").val(data.trangThai || '');
+            
+            // Xử lý hiển thị ảnh hiện tại
+            if (data.anh) {
+                $("#currentImageContainer").show();
+                $("#currentImageName").text(data.anh);
+                $("#currentImagePreview").attr("src", "/images/" + data.anh).show();
+            } else {
+                $("#currentImageContainer").hide();
+            }
+            
+            // Reset input file
+            $("#anh").val("");
+            $("#imagePreview").html('');
+        },
+        error: function(xhr, status, error) {
+            console.error("Lỗi khi lấy thông tin phim:", error);
+            alert("Có lỗi xảy ra khi tải thông tin phim");
+        }
+    });
+}
+
+function thucHienXoa() {
+    var id = $("#hPhimid").val();
+
+    $.ajax({
+        url: '/api/phim/' + id,
+        contentType: "application/json; charset=utf-8;",
+        dataType: "json",
+        type: "DELETE",
+        success: function (data) {
+            if (data.name != null) {
+                $("#modalXoa").modal("hide")
+                //Reload lại trang
+                window.location.reload();
+            } else {
+                $('#title-delete').nextAll(".spanError").remove();
+                $('#title-delete').after('<div class="alert alert-dismissible alert-danger spanError">' + data.name + '</div>')
+
+            }
+        },
+        error: function (error) {
+            alert("Có lỗi xảy ra " + error.name);
+        }
+    });
+}
+
 function taoGiaoDienPhanTrang() {
     let paginationHtml = '';
 
@@ -180,137 +303,6 @@ function thayDoiSoLuongTrang() {
     console.log(newSize);
     itemsPerPage = parseInt(newSize);
     layDanhSachPhim(1, itemsPerPage);
-}
-
-// Hàm này sẽ được gọi khi submit form
-function handleSubmit(event) {
-    event.preventDefault();
-    
-    // Lấy form data
-    let formData = new FormData($("#modalPhim")[0]);
-    
-    // Xác định URL và method phù hợp (thêm mới hoặc cập nhật)
-    const id = $("#hPhimid").val();
-    const url = id ? `/api/phim/${id}` : '/api/phim';
-    const method = id ? 'PUT' : 'POST';
-    
-    // Kiểm tra dữ liệu bắt buộc
-    if ($("#tenPhim").val().trim() === '') {
-        alert("Vui lòng nhập tên phim");
-        return false;
-    }
-    
-    // Nếu là thêm mới, bắt buộc phải có ảnh
-    if (!id && !$("#anh")[0].files[0]) {
-        alert("Vui lòng chọn ảnh cho phim");
-        return false;
-    }
-    
-    // Hiển thị loading
-    const submitBtn = $(event.target).find('button[type="submit"]');
-    const originalBtnText = submitBtn.html();
-    submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Đang xử lý...');
-    
-    // Gửi dữ liệu
-    $.ajax({
-        url: url,
-        type: method,
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: function(response) {
-            alert('Thao tác thành công!');
-            $("#modalPhim").modal('hide');
-            layDanhSachPhim(currentPage, itemsPerPage);
-        },
-        error: function(xhr) {
-            console.error('Lỗi:', xhr);
-            let errorMessage = 'Có lỗi xảy ra';
-            if (xhr.responseJSON && xhr.responseJSON.message) {
-                errorMessage += ': ' + xhr.responseJSON.message;
-            } else if (xhr.statusText) {
-                errorMessage += ' (' + xhr.status + ' ' + xhr.statusText + ')';
-            }
-            alert(errorMessage);
-        },
-        complete: function() {
-            submitBtn.prop('disabled', false).html(originalBtnText);
-        }
-    });
-    
-    return false;
-}
-
-/*
-        * Hàm hiển thị thông tin chi tiết chủ đề bằng jquery ajax
-*/
-function thongTinChiTiet(idPhim) {
-    $.ajax({
-        type: "GET",
-        url: "/api/phim/" + idPhim,
-        data: { id: idPhim },
-        dataType: 'json',
-        contentType: "application/json; charset=utf-8",
-        async: true,
-        success: function (data) {
-            // Hiển thị lên giao diện
-            $("#modalTitle").text("Sửa thông tin phim");
-            $("#hPhimid").val(data.idPhim);
-            $("#idPhim").val(data.idPhim);
-            $("#tenPhim").val(data.tenPhim);
-            $("#daoDien").val(data.daoDien || '');
-            $("#dienVien").val(data.dienVien || '');
-            populateTheLoaiDropdown();
-            $("#idTheLoai").val(data.idTheLoai || '');
-            $("#khoiChieu").val(data.khoiChieu || '');
-            $("#ngonNgu").val(data.ngonNgu || '');
-            $("#thoiLuong").val(data.thoiLuong || '');
-            $("#moTa").val(data.moTa || '');
-            $("#trangThai").val(data.trangThai || '');
-            
-            // Xử lý hiển thị ảnh hiện tại
-            if (data.anh) {
-                $("#currentImageContainer").show();
-                $("#currentImageName").text(data.anh);
-                $("#currentImagePreview").attr("src", "/images/" + data.anh).show();
-            } else {
-                $("#currentImageContainer").hide();
-            }
-            
-            // Reset input file
-            $("#anh").val("");
-            $("#imagePreview").html('');
-        },
-        error: function(xhr, status, error) {
-            console.error("Lỗi khi lấy thông tin phim:", error);
-            alert("Có lỗi xảy ra khi tải thông tin phim");
-        }
-    });
-}
-
-function thucHienXoa() {
-    var id = $("#hPhimid").val();
-
-    $.ajax({
-        url: '/api/phim/' + id,
-        contentType: "application/json; charset=utf-8;",
-        dataType: "json",
-        type: "DELETE",
-        success: function (data) {
-            if (data.name != null) {
-                $("#modalXoa").modal("hide")
-                //Reload lại trang
-                window.location.reload();
-            } else {
-                $('#title-delete').nextAll(".spanError").remove();
-                $('#title-delete').after('<div class="alert alert-dismissible alert-danger spanError">' + data.name + '</div>')
-
-            }
-        },
-        error: function (error) {
-            alert("Có lỗi xảy ra " + error.name);
-        }
-    });
 }
 
 // Call the function to populate the dropdown when the page loads

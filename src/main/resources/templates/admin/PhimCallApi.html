@@ -149,13 +149,38 @@
                 return false;
             }
 
-            // Lấy form data
-            let formData = new FormData($("#modalPhim")[0]);
-
-            // Xác định URL và method phù hợp (thêm mới hoặc cập nhật)
+            // Tạo đối tượng FormData
+            let formData = new FormData();
+            
+            // Thêm các trường dữ liệu vào formData
             const id = $("#hPhimid").val();
+            
+            // Thêm các trường input thông thường
+            const formElements = [
+                'tenPhim', 'daoDien', 'dienVien', 'idTheLoai', 
+                'khoiChieu', 'ngonNgu', 'thoiLuong', 'moTa', 'trangThai'
+            ];
+            
+            formElements.forEach(field => {
+                const value = $(`#${field}`).val();
+                if (value !== undefined && value !== null) {
+                    formData.append(field, value);
+                }
+            });
+            
+            // Thêm file ảnh nếu có
+            const fileInput = document.getElementById('anh');
+            if (fileInput.files.length > 0) {
+                formData.append('anh', fileInput.files[0]);
+            } else if (!id) {
+                // Nếu là thêm mới mà không có ảnh
+                alert("Vui lòng chọn ảnh cho phim");
+                return false;
+            }
+
+            // Xác định URL và method
             const url = id ? `/api/phim/${id}` : '/api/phim';
-            const method = id ? 'PUT' : 'POST';
+            const method = 'POST';
 
             // Hiển thị loading
             const submitBtn = $(event.target).find('button[type="submit"]');
@@ -167,23 +192,27 @@
                 url: url,
                 type: method,
                 data: formData,
-                processData: false,
-                contentType: false,
+                processData: false,  // Không xử lý dữ liệu
+                contentType: false,   // Không đặt Content-Type
                 success: function (response) {
                     alert('Thao tác thành công!');
                     $("#modalPhim").modal('hide');
                     layDanhSachPhim(currentPage, itemsPerPage);
                 },
-                error: function (xhr) {
-                    console.error('Lỗi:', xhr);
-                    let errorMessage = 'Có lỗi xảy ra';
+                error: function (xhr, status, error) {
+                    console.error('Lỗi chi tiết:', xhr.responseText);
+                    let errorMessage = 'Có lỗi xảy ra khi lưu dữ liệu.\n';
+
+                    // Kiểm tra nếu có thông báo lỗi từ server
                     if (xhr.responseJSON && xhr.responseJSON.message) {
-                        errorMessage += ': ' + xhr.responseJSON.message;
+                        errorMessage += 'Chi tiết: ' + xhr.responseJSON.message;
+                    } else if (xhr.statusText) {
+                        errorMessage += 'Mã lỗi: ' + xhr.status + ' - ' + xhr.statusText;
+                    } else {
+                        errorMessage += 'Không thể kết nối đến máy chủ. Vui lòng thử lại sau.';
                     }
+
                     alert(errorMessage);
-                },
-                complete: function () {
-                    submitBtn.prop('disabled', false).html(originalBtnText);
                 }
             });
 
@@ -258,11 +287,19 @@
     </div>
     <form id="modalPhim" method="post" class="modal fade" tabindex="-1" aria-labelledby="Thêm phim"
           aria-hidden="true" enctype="multipart/form-data" onsubmit="return handleSubmit(event)">
+        <!-- Thêm sự kiện khi đóng modal -->
+        <script>
+            document.getElementById('modalPhim').addEventListener('hidden.bs.modal', function () {
+                // Reset trạng thái nút Lưu
+                const submitBtn = this.querySelector('button[type="submit"]');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Lưu';
+            });
+        </script>
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalTitle">Thêm mới thông tin phim</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="tile-body" id="tile-body">
