@@ -50,7 +50,7 @@
 - **Pay** - Thanh Toán
 
 ### ERD Minh Họa
-![ERD.png](images/ERD.png)
+![ERD_New.png](images/ERD_New.png)
 
 ### 🛠️Công nghệ sử dụng
 - **Backend**: Java Spring Boot, Spring Security, Spring Data JPA
